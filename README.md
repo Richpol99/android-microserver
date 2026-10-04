@@ -16,6 +16,9 @@
   <img src="https://img.shields.io/badge/Reverse%20Proxy-Nginx%20%2B%20Cloudflare-009639?style=for-the-badge&logo=nginx" alt="Nginx">
   <img src="https://img.shields.io/badge/UI-Claude%20Desktop%20PWA-B55D3E?style=for-the-badge" alt="Claude Theme PWA">
   <img src="https://img.shields.io/badge/Protocol-Model%20Context%20Protocol%20(MCP)-FF6F00?style=for-the-badge" alt="MCP">
+  <img src="https://img.shields.io/badge/Power-%3C5W%20Ultra--Low-brightgreen?style=for-the-badge" alt="Ultra Low Power">
+  <img src="https://img.shields.io/badge/License-MIT-success?style=for-the-badge" alt="MIT License">
+  <a href="llms.txt"><img src="https://img.shields.io/badge/LLMs.txt-Standard-8A2BE2?style=for-the-badge" alt="LLMs.txt Standard"></a>
 </p>
 
 ---
@@ -49,7 +52,8 @@
 - [11. Skill Especializada de Antigravity (`skills/`)](#11-skill-especializada-de-antigravity-skills)
 - [12. Optimización, Térmicas y Salud de la Batería](#12-optimización-térmicas-y-salud-de-la-batería)
 - [13. Adaptación a Otros Dispositivos Android](#13-adaptación-a-otros-dispositivos-android)
-- [14. Licencia y Créditos](#14-licencia-y-créditos)
+- [14. Preguntas Frecuentes, Comparativa con Raspberry Pi y Casos de Uso (FAQ)](#14-preguntas-frecuentes-comparativa-con-raspberry-pi-y-casos-de-uso-faq)
+- [15. Licencia y Créditos](#15-licencia-y-créditos)
 
 ---
 
@@ -640,9 +644,43 @@ Solo se requiere ajustar las variables de ruta en la función `api_stats` dentro
 
 ---
 
-## 14. Licencia y Créditos
+## 14. Preguntas Frecuentes, Comparativa con Raspberry Pi y Casos de Uso (FAQ)
 
-- **Licencia:** MIT License. Código abierto y libre para uso personal, educativo y comercial.
+### ❓ ¿Por qué reciclar un smartphone Android viejo en lugar de comprar una Raspberry Pi?
+
+| Característica | 📱 Smartphone Android (Android-MicroServer) | 🍓 Raspberry Pi 4 / 5 |
+| :--- | :--- | :--- |
+| **Costo Inicial** | **$0 USD** (Hardware que ya posees o reciclado) | $60 - $120 USD (Placa + Fuente + Caja + MicroSD) |
+| **SAI / UPS Ante Cortes Eléctricos** | **Integrado de fábrica** (Batería 3000-5000 mAh = 6 a 8 hrs online) | Requiere módulo HAT o batería UPS externa ($30-$50 USD) |
+| **Riesgo de Corrupción de Datos** | **Mínimo:** eMMC / UFS integrada con respaldo de batería | **Alto:** Las tarjetas MicroSD se corrompen fácilmente en apagones |
+| **Conectividad Inalámbrica** | Wi-Fi Dual Band, Bluetooth, y Módem 4G LTE opcional | Solo Wi-Fi / Bluetooth integrado |
+| **Pantalla de Telemetría** | Pantalla táctil integrada para métricas o consola | Requiere monitor HDMI externo o pantalla HAT |
+| **Consumo Eléctrico Promedio** | **< 3 a 5 Watts** (Arquitectura ultra eficiente de smartphone) | 5 a 12 Watts bajo carga |
+
+### 🤖 ¿Cómo interactúan los agentes de IA (Claude, Cursor, Antigravity) con este servidor?
+El proyecto implementa el estándar oficial **Model Context Protocol (MCP)** en `mcp/server.py`. Cuando conectas tu asistente de IA (Claude Desktop, Cursor o Antigravity), el modelo adquiere herramientas nativas para:
+1. Inspeccionar telemetría y salud del hardware sin abrir SSH.
+2. Leer archivos remotos con paginación inteligente.
+3. Proponer parches de código, validar sintaxis y reiniciar servicios con retroceso automático si detecta errores.
+
+### 🛡️ ¿Es seguro exponer este micro-servidor a Internet?
+Sí. El servidor implementa una arquitectura de **defensa en profundidad**:
+1. **Sin puertos abiertos en el router:** Mediante túneles de Cloudflare o proxy inverso con SSL estricto.
+2. **Autenticación Bearer:** El endpoint de ejecución de comandos (`/api/agent/stream`) rechaza cualquier petición no autorizada con `HTTP 401`.
+3. **Suite de Seguridad Activa:** Incluye monitoreo de integridad de archivos (`cyber_suite.py`) y bloqueo automático de ataques por fuerza bruta.
+
+### 🔍 Casos de Uso Recomendados
+- **Nodo de Homelab ultra-eficiente:** Alojamiento de servicios ligeros, bots de Telegram/Discord, tareas programadas (cron) y scripts de automatización.
+- **Servidor Edge de Telemetría e IoT:** Monitoreo remoto con sensores integrados y respaldo continuo de batería ante cortes de energía.
+- **Centro de Pruebas de IA Autónomo:** Estación de desarrollo donde asistentes de IA pueden desplegar y probar código de forma segura.
+- **Almacén y Servidor de Notas Markdown:** Acceso remoto seguro a tu documentación personal.
+
+---
+
+## 15. Licencia y Créditos
+
+- **Licencia:** Distribuido bajo la Licencia **[MIT](LICENSE)**. Código abierto y libre para uso personal, educativo y comercial.
+- **Estándar LLM:** Compatible con el estándar **[llms.txt](llms.txt)** para motores de búsqueda de IA.
 - **Autor y Desarrollador:** [Richpol99](https://github.com/Richpol99)
 - **Ecosistema:** Construido con herramientas de código abierto: Linux, Python aiohttp, PM2, Nginx, Kali Linux y el estándar Model Context Protocol (MCP).
 
@@ -651,3 +689,4 @@ Solo se requiere ajustar las variables de ruta en la función `api_stats` dentro
 <p align="center">
   <sub>Construido con dedicación para darle una segunda vida al hardware y democratizar los micro-servidores autónomos.</sub>
 </p>
+
