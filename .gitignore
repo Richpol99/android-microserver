@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and temporary data
+temp_music_cache/
+downloads/
+scratch/
+*.tar.gz
+*.zip
+
+# Runtime logs
+*.log
+server/server.log
+
+# Backup files
+*.bak
+*.bak.*
+server/*.bak
+server/*.bak.*
+
+# Real secrets & active databases (Use .example.json templates instead)
+server/*.json
+!server/*.example.json
+!server/static/*.json
+
+# Sensitive vault data
+server/vault_data/*
+!server/vault_data/.gitkeep
+
+# Environment configs
+.env
+.env.local
+
+# OS / Editor metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

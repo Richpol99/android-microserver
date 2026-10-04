@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </radialGradient>
+
+    <!-- Cyber Cyan Gradient -->
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <!-- Emerald Glow Gradient -->
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <!-- Core Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="intenseGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Base Badge / Dark Hexagon Shield -->
+  <polygon points="256,24 464,124 464,388 256,488 48,388 48,124" 
+           fill="url(#bgGrad)" 
+           stroke="url(#cyanGrad)" 
+           stroke-width="8" 
+           stroke-linejoin="round"/>
+
+  <!-- Subtle Inner Border -->
+  <polygon points="256,44 444,136 444,376 256,468 68,376 68,136" 
+           fill="none" 
+           stroke="#06b6d4" 
+           stroke-width="1.5" 
+           stroke-opacity="0.3"
+           stroke-linejoin="round"/>
+
+  <!-- Circuit Trace Lines & Bus Nodal Points -->
+  <g stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.45">
+    <path d="M 68 136 L 140 190 L 140 250" />
+    <path d="M 444 136 L 372 190 L 372 250" />
+    <path d="M 140 250 L 175 275" />
+    <path d="M 372 250 L 337 275" />
+    <path d="M 256 468 L 256 410 L 210 375" />
+    <path d="M 256 410 L 302 375" />
+    
+    <!-- Micro Nodal Dots -->
+    <circle cx="140" cy="190" r="4" fill="#38bdf8"/>
+    <circle cx="372" cy="190" r="4" fill="#38bdf8"/>
+    <circle cx="210" cy="375" r="4" fill="#10b981"/>
+    <circle cx="302" cy="375" r="4" fill="#10b981"/>
+  </g>
+
+  <!-- 8 Hardware Core Indicators (Snapdragon 625 Octa-Core) -->
+  <g fill="#0284c7" opacity="0.8">
+    <rect x="180" y="70" width="8" height="14" rx="2"/>
+    <rect x="200" y="70" width="8" height="14" rx="2"/>
+    <rect x="220" y="70" width="8" height="14" rx="2"/>
+    <rect x="240" y="70" width="8" height="14" rx="2"/>
+    <rect x="264" y="70" width="8" height="14" rx="2"/>
+    <rect x="284" y="70" width="8" height="14" rx="2"/>
+    <rect x="304" y="70" width="8" height="14" rx="2"/>
+    <rect x="324" y="70" width="8" height="14" rx="2"/>
+  </g>
+
+  <!-- Motorola Cyber Batwing Wings (Left & Right Wings) -->
+  <!-- Left Wing -->
+  <path d="M 116 330 
+           C 116 330, 162 162, 238 152 
+           C 246 151, 252 156, 252 165 
+           C 252 188, 226 270, 206 312 
+           C 192 340, 160 350, 116 330 Z" 
+        fill="url(#cyanGrad)" 
+        filter="url(#glow)"/>
+
+  <!-- Right Wing -->
+  <path d="M 396 330 
+           C 396 330, 350 162, 274 152 
+           C 266 151, 260 156, 260 165 
+           C 260 188, 286 270, 306 312 
+           C 320 340, 352 350, 396 330 Z" 
+        fill="url(#cyanGrad)" 
+        filter="url(#glow)"/>
+
+  <!-- Center Arch Connector -->
+  <path d="M 204 314 
+           C 230 270, 246 225, 256 195 
+           C 266 225, 282 270, 308 314 
+           C 285 328, 227 328, 204 314 Z" 
+        fill="#083344" 
+        stroke="url(#cyanGrad)" 
+        stroke-width="3"/>
+
+  <!-- Server Heartbeat Core (Center Luminescent Reactor) -->
+  <circle cx="256" cy="275" r="22" fill="#0f172a" stroke="url(#emeraldGrad)" stroke-width="4" filter="url(#intenseGlow)"/>
+  <circle cx="256" cy="275" r="12" fill="#10b981" filter="url(#glow)"/>
+  <circle cx="256" cy="275" r="5" fill="#ecfdf5"/>
+
+  <!-- Server Status Pulse Waves -->
+  <path d="M 230 380 L 244 380 L 250 365 L 256 395 L 262 372 L 268 380 L 282 380" 
+        fill="none" 
+        stroke="#10b981" 
+        stroke-width="3.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        filter="url(#glow)"/>
+
+  <!-- Brand Typography: MOTOSERVER -->
+  <text x="256" y="440" 
+        text-anchor="middle" 
+        font-family="system-ui, -apple-system, sans-serif" 
+        font-size="24" 
+        font-weight="900" 
+        letter-spacing="5" 
+        fill="#f8fafc">MOTO<tspan fill="#38bdf8">SERVER</tspan></text>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "bot_token": "YOUR_TELEGRAM_BOT_TOKEN_HERE",
+  "admin_chat_ids": [],
+  "master_password_hash": "DEFAULT_SHA256_HASH_HERE",
+  "is_password_default": true,
+  "two_factor_enabled": true,
+  "security_locked": false,
+  "failed_attempts_limit": 5,
+  "session_secret": "YOUR_SESSION_SECRET_HEX_32_BYTES",
+  "webhook_secret": "YOUR_WEBHOOK_SECRET_HEX",
+  "agent_api_key": "YOUR_AGENT_API_KEY_HERE",
+  "ip_blacklist": [],
+  "ip_whitelist": [
+    "127.0.0.1",
+    "::1"
+  ],
+  "defcon_level": 5
+}

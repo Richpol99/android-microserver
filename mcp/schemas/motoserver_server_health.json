@@ -1,0 +1,1 @@
+{"name":"motoserver_server_health","description":"Queries live status and hardware telemetry directly from https://your-domain.com/api/stats (PM2 status, CPU/GPU temps, battery state, RAM, uptime, network).","parameters":{"properties":{"detailed":{"description":"Whether to return full raw telemetry or a compact summary. Defaults to true.","type":"boolean"}},"type":"object"}}

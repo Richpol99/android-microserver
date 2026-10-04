@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Claude Desktop - Antigravity</title>
+    <link rel="manifest" href="/agent-manifest.json">
+    <meta name="theme-color" content="#1b1a18">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="/static/antigravity-icon.png">
+    <link rel="apple-touch-icon" href="/static/antigravity-icon.png">
+
+    <!-- Fonts: Google Fonts for authentic Claude typography (Newsreader + Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        claude: {
+                            bg: '#1f1e1d',
+                            sidebar: '#181716',
+                            surface: '#262524',
+                            surfaceHover: '#2f2d2b',
+                            card: '#2a2826',
+                            border: '#383633',
+                            borderLight: 'rgba(255, 255, 255, 0.08)',
+                            terracotta: '#d97757',
+                            terracottaHover: '#c86949',
+                            terracottaLight: 'rgba(217, 119, 87, 0.15)',
+                            text: '#faf9f5',
+                            textMuted: '#b5b3ad',
+                            textSubtle: '#7e7c75'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        serif: ['Newsreader', 'Georgia', 'serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Highlight.js with dark warm theme -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* Claude Desktop Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #383633;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4743;
+        }
+
+        /* Streaming Blinking Cursor */
+        .streaming-cursor::after {
+            content: '●';
+            display: inline-block;
+            vertical-align: baseline;
+            animation: pulse-dot 1.2s infinite;
+            color: #d97757;
+            font-size: 0.85em;
+            margin-left: 4px;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.85); }
+        }
+
+        /* Typography & Markdown inside chat messages */
+        .prose pre {
+            background: #181716 !important;
+            border: 1px solid #383633;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin: 0.85rem 0;
+            overflow-x: auto;
+        }
+        .prose code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        .prose p {
+            margin-bottom: 0.75rem;
+            line-height: 1.65;
+            color: #faf9f5;
+        }
+        .prose p:last-child {
+            margin-bottom: 0;
+        }
+        .prose strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .prose ul, .prose ol {
+            margin-left: 1.4rem;
+            margin-bottom: 0.75rem;
+            color: #e5e4df;
+        }
+        .prose ul { list-style-type: disc; }
+        .prose ol { list-style-type: decimal; }
+        .prose li { margin-bottom: 0.25rem; }
+        .prose h1, .prose h2, .prose h3, .prose h4 {
+            color: #faf9f5;
+            font-weight: 600;
+            margin-top: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .prose blockquote {
+            border-left: 3px solid #d97757;
+            padding-left: 0.85rem;
+            color: #b5b3ad;
+            font-style: italic;
+            margin: 0.75rem 0;
+        }
+        .prose table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.85rem 0;
+            font-size: 0.85rem;
+        }
+        .prose th, .prose td {
+            border: 1px solid #383633;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+        .prose th {
+            background: #262524;
+            color: #faf9f5;
+            font-weight: 600;
+        }
+
+        /* Claude Starburst SVG Logo */
+        .claude-star {
+            display: inline-block;
+            vertical-align: middle;
+            fill: #d97757;
+        }
+    </style>
+</head>
+<body class="bg-claude-bg text-claude-text h-[100dvh] flex flex-col overflow-hidden font-sans select-none antialiased">
+
+    <!-- Top Navigation Bar (Claude Desktop Window Chrome) -->
+    <header class="h-13 py-2 px-3.5 border-b border-claude-border bg-claude-sidebar/90 flex items-center justify-between z-20 shrink-0 backdrop-blur-md">
+        <!-- Left: Sidebar Toggle & Claude Brand -->
+        <div class="flex items-center space-x-2.5">
+            <button id="btn-toggle-sidebar" class="p-1.5 rounded-lg text-claude-textMuted hover:text-claude-text hover:bg-claude-surface transition" title="Alternar barra lateral (Ctrl+B)">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="location.href='/agent'">
+                <!-- Claude Starburst Icon -->
+                <svg class="claude-star w-5 h-5" viewBox="0 0 24 24">
+                    <path d="M12 2L14.2 9.4L21.6 11.6L14.2 13.8L12 21.2L9.8 13.8L2.4 11.6L9.8 9.4L12 2Z" fill="#d97757"/>
+                </svg>
+                <span class="font-serif font-medium text-base tracking-normal text-claude-text flex items-center gap-1.5">
+                    Claude <span class="text-[10px] font-sans font-medium uppercase tracking-wider px-1.5 py-0.5 rounded bg-claude-terracottaLight text-claude-terracotta border border-claude-terracotta/30">Desktop</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Center: Model Indicator Chip (Claude Style) -->
+        <div class="hidden md:flex items-center space-x-2.5 bg-claude-surface px-3 py-1 rounded-full border border-claude-border text-xs">
+            <span class="flex items-center gap-1.5 text-claude-text font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Claude 3.7 Sonnet (vía AGY)
+            </span>
+            <span class="text-claude-border">|</span>
+            <div class="flex items-center gap-1.5 text-claude-textMuted font-mono text-[11px]">
+                <i class="fa-regular fa-folder text-claude-terracotta"></i>
+                <span id="current-workspace-display" class="truncate max-w-[150px]">/root/dashboard</span>
+            </div>
+        </div>
+
+        <!-- Right: Actions & Tools -->
+        <div class="flex items-center space-x-2">
+            <!-- Effort Selector (Claude Extended Thinking / Low-Med-High) -->
+            <div class="flex items-center bg-claude-surface rounded-lg border border-claude-border px-2 py-1">
+                <i class="fa-solid fa-sparkles text-claude-terracotta text-[10px] mr-1.5"></i>
+                <select id="select-effort" class="bg-transparent text-claude-text text-xs focus:outline-none cursor-pointer">
+                    <option value="high" class="bg-claude-surface text-claude-text">Pensamiento: Alto</option>
+                    <option value="medium" class="bg-claude-surface text-claude-text">Pensamiento: Medio</option>
+                    <option value="low" class="bg-claude-surface text-claude-text">Pensamiento: Rápido</option>
+                </select>
+            </div>
+
+            <!-- Toggle Canvas Button -->
+            <button id="btn-toggle-canvas" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-claude-surface hover:bg-claude-surfaceHover text-claude-text border border-claude-border transition">
+                <i class="fa-solid fa-layer-group text-claude-terracotta"></i>
+                <span class="hidden sm:inline">Lienzo</span>
+            </button>
+
+            <!-- Delete Current Chat Button (Shows when chat is active) -->
+            <button id="btn-delete-active-chat" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition" title="Borrar conversación activa">
+                <i class="fa-regular fa-trash-can text-xs pointer-events-none"></i>
+                <span class="hidden md:inline">Borrar chat</span>
+            </button>
+
+            <!-- Back to Dashboard -->
+            <a href="/" title="Volver a MotoServer" class="p-1.5 rounded-lg text-claude-textMuted hover:text-claude-text hover:bg-claude-surface transition">
+                <i class="fa-solid fa-house text-xs"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- Left Sidebar: Claude Desktop Chats & Projects Navigation -->
+        <aside id="sidebar" class="w-68 border-r border-claude-border bg-claude-sidebar flex flex-col shrink-0 transition-transform duration-300 absolute lg:relative z-30 h-full -translate-x-full lg:translate-x-0">
+            <!-- New Chat Button -->
+            <div class="p-3 border-b border-claude-border/80">
+                <button id="btn-new-chat" class="w-full flex items-center justify-between py-2 px-3 rounded-xl bg-claude-surface hover:bg-claude-surfaceHover text-claude-text border border-claude-border text-xs font-medium transition active:scale-[0.98]">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-plus text-claude-terracotta"></i> Nueva conversación
+                    </span>
+                    <span class="text-[10px] font-mono text-claude-textSubtle bg-claude-sidebar px-1.5 py-0.5 rounded border border-claude-border">Ctrl K</span>
+                </button>
+            </div>
+
+            <!-- Workspace Directory Selector -->
+            <div class="px-3 py-2.5 border-b border-claude-border/60">
+                <div class="text-[10px] font-semibold uppercase tracking-wider text-claude-textSubtle mb-1 flex items-center justify-between">
+                    <span>Directorio Activo</span>
+                    <i class="fa-solid fa-folder text-[10px]"></i>
+                </div>
+                <select id="select-workspace" class="w-full bg-claude-surface border border-claude-border text-claude-text text-xs rounded-lg p-1.5 focus:outline-none focus:border-claude-terracotta font-mono">
+                    <option value="/root/dashboard">/root/dashboard (Servidor)</option>
+                    <option value="/root">/root (Raíz Kali)</option>
+                    <option value="/sdcard">/sdcard (Almacenamiento Teléfono)</option>
+                </select>
+            </div>
+
+            <!-- Conversation History List -->
+            <div class="flex-1 overflow-y-auto p-2 space-y-1" id="history-container">
+                <div class="text-[10px] font-semibold uppercase tracking-wider text-claude-textSubtle px-2 py-1.5">Conversaciones</div>
+                <div id="history-loading" class="text-xs text-claude-textSubtle text-center py-4">
+                    <i class="fa-solid fa-circle-notch fa-spin mr-1 text-claude-terracotta"></i> Cargando historial...
+                </div>
+                <div id="history-list" class="space-y-0.5"></div>
+            </div>
+
+            <!-- Sidebar Footer (System Status) -->
+            <div class="p-3 border-t border-claude-border text-[11px] text-claude-textSubtle flex justify-between items-center bg-claude-sidebar">
+                <span class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> MotoServer Node
+                </span>
+                <span class="font-mono text-claude-textMuted text-[10px]">AGY ARM64</span>
+            </div>
+        </aside>
+
+        <!-- Center: Chat Conversation View -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-claude-bg relative">
+            <!-- Messages Scroll Area -->
+            <div id="messages-container" class="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6 select-text">
+                <!-- Welcome Screen (Shows when no active messages) -->
+                <div id="welcome-banner" class="max-w-2xl mx-auto my-auto py-12 text-center space-y-5">
+                    <!-- Claude Sunburst Emblem -->
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-claude-surface border border-claude-border flex items-center justify-center shadow-md">
+                        <svg class="claude-star w-8 h-8" viewBox="0 0 24 24">
+                            <path d="M12 2L14.2 9.4L21.6 11.6L14.2 13.8L12 21.2L9.8 13.8L2.4 11.6L9.8 9.4L12 2Z" fill="#d97757"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-serif font-normal text-claude-text tracking-normal">¿En qué puedo ayudarte hoy?</h2>
+                    <p class="text-xs md:text-sm text-claude-textMuted max-w-md mx-auto leading-relaxed">
+                        Asistente de programación emparejada con motor <strong class="text-claude-text">Antigravity</strong> en MotoServer, equipado con tus 7 skills de diseño y arquitectura.
+                    </p>
+
+                    <!-- Prompt Suggestion Cards (Claude Style) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-4 text-left max-w-lg mx-auto">
+                        <button onclick="sendQuickPrompt('Aplica la skill frontend-design y design-taste-frontend para revisar la estética de este proyecto')" class="p-3 rounded-xl bg-claude-surface hover:bg-claude-surfaceHover border border-claude-border hover:border-claude-terracotta/40 transition text-xs text-claude-textMuted flex items-start gap-2.5 group">
+                            <i class="fa-solid fa-paintbrush text-claude-terracotta mt-0.5 group-hover:scale-110 transition"></i>
+                            <div>
+                                <div class="font-medium text-claude-text">Auditar Diseño Frontend</div>
+                                <div class="text-claude-textSubtle text-[11px]">Revisar con design-taste y anti-slop</div>
+                            </div>
+                        </button>
+                        <button onclick="sendQuickPrompt('Genera una infografía estructurada usando la skill baoyu-infographic con layout bento-grid')" class="p-3 rounded-xl bg-claude-surface hover:bg-claude-surfaceHover border border-claude-border hover:border-claude-terracotta/40 transition text-xs text-claude-textMuted flex items-start gap-2.5 group">
+                            <i class="fa-solid fa-diagram-project text-amber-500 mt-0.5 group-hover:scale-110 transition"></i>
+                            <div>
+                                <div class="font-medium text-claude-text">Crear Infografía Baoyu</div>
+                                <div class="text-claude-textSubtle text-[11px]">Bento-grid con 21 layouts y estilos</div>
+                            </div>
+                        </button>
+                        <button onclick="sendQuickPrompt('Crea una presentación ejecutiva usando la skill slides con soporte para Chart.js')" class="p-3 rounded-xl bg-claude-surface hover:bg-claude-surfaceHover border border-claude-border hover:border-claude-terracotta/40 transition text-xs text-claude-textMuted flex items-start gap-2.5 group">
+                            <i class="fa-solid fa-presentation-screen text-indigo-400 mt-0.5 group-hover:scale-110 transition"></i>
+                            <div>
+                                <div class="font-medium text-claude-text">Diseñar Diapositivas HTML</div>
+                                <div class="text-claude-textSubtle text-[11px]">Presentación con datos interactivos</div>
+                            </div>
+                        </button>
+                        <button onclick="sendQuickPrompt('Audita el código UI del proyecto según web-design-guidelines para accesibilidad y usabilidad')" class="p-3 rounded-xl bg-claude-surface hover:bg-claude-surfaceHover border border-claude-border hover:border-claude-terracotta/40 transition text-xs text-claude-textMuted flex items-start gap-2.5 group">
+                            <i class="fa-solid fa-universal-access text-emerald-400 mt-0.5 group-hover:scale-110 transition"></i>
+                            <div>
+                                <div class="font-medium text-claude-text">Auditoría Accesibilidad (a11y)</div>
+                                <div class="text-claude-textSubtle text-[11px]">Cumplimiento Web Interface Guidelines</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Messages Thread -->
+                <div id="messages-list" class="max-w-3xl mx-auto space-y-6"></div>
+            </div>
+
+            <!-- Bottom Floating Prompt Box (The Signature Claude Bar) -->
+            <div class="p-3 md:p-5 shrink-0 bg-gradient-to-t from-claude-bg via-claude-bg to-transparent">
+                <div class="max-w-3xl mx-auto relative flex flex-col bg-claude-surface rounded-2xl border border-claude-border focus-within:border-claude-terracotta/60 focus-within:ring-2 focus-within:ring-claude-terracotta/20 shadow-2xl transition-all">
+                    <!-- Text Input -->
+                    <textarea id="prompt-input" rows="1" placeholder="Responde a Claude... (Enter para enviar, Shift+Enter para salto de línea)" class="w-full bg-transparent text-sm text-claude-text placeholder-claude-textSubtle px-4 pt-3.5 pb-2 resize-none focus:outline-none max-h-40 overflow-y-auto leading-relaxed"></textarea>
+                    
+                    <!-- Bottom Controls Bar -->
+                    <div class="flex items-center justify-between px-3.5 py-2 text-xs text-claude-textSubtle border-t border-claude-border/50">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] font-mono text-claude-textSubtle hidden sm:inline">
+                                <i class="fa-regular fa-keyboard mr-1"></i> Enter para enviar
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="btn-cancel" class="hidden px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-xs font-medium transition">
+                                <i class="fa-solid fa-stop mr-1"></i> Detener
+                            </button>
+                            <button id="btn-send" class="w-7 h-7 rounded-full bg-claude-terracotta hover:bg-claude-terracottaHover text-white flex items-center justify-center shadow-md transition disabled:opacity-30 disabled:hover:bg-claude-terracotta">
+                                <i class="fa-solid fa-arrow-up text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Side: Claude Canvas / Artifacts Panel -->
+        <aside id="canvas-panel" class="w-full lg:w-[480px] xl:w-[560px] border-l border-claude-border bg-claude-sidebar flex flex-col shrink-0 transition-all duration-300 absolute lg:relative z-20 h-full translate-x-full lg:translate-x-0 hidden">
+            <!-- Canvas Header -->
+            <div class="h-12 border-b border-claude-border px-4 flex items-center justify-between bg-claude-surface/60">
+                <div class="flex items-center space-x-2 truncate">
+                    <i class="fa-solid fa-cube text-claude-terracotta text-xs"></i>
+                    <span id="canvas-title" class="text-xs font-medium text-claude-text truncate">Lienzo de Artefactos</span>
+                    <span id="canvas-lang" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-claude-sidebar text-claude-textMuted border border-claude-border">código</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <button id="btn-canvas-copy" title="Copiar código" class="p-1.5 rounded-lg text-claude-textMuted hover:text-claude-text hover:bg-claude-surface text-xs transition">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                    <button id="btn-canvas-download" title="Descargar archivo" class="p-1.5 rounded-lg text-claude-textMuted hover:text-claude-text hover:bg-claude-surface text-xs transition">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                    <button id="btn-close-canvas" class="p-1.5 rounded-lg text-claude-textMuted hover:text-claude-text hover:bg-claude-surface text-xs transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas View Tabs -->
+            <div class="h-9 border-b border-claude-border px-3 flex items-center space-x-2 bg-claude-sidebar text-xs">
+                <button id="tab-canvas-code" class="px-3 py-1 font-medium text-claude-terracotta border-b-2 border-claude-terracotta">Código</button>
+                <button id="tab-canvas-preview" class="px-3 py-1 text-claude-textMuted hover:text-claude-text">Vista Previa</button>
+            </div>
+
+            <!-- Canvas Workspace Content -->
+            <div class="flex-1 overflow-auto bg-claude-sidebar p-3 relative font-mono text-xs select-text">
+                <pre id="canvas-code-block" class="overflow-x-auto"><code id="canvas-code-content" class="language-plaintext"></code></pre>
+                <div id="canvas-preview-container" class="hidden h-full w-full bg-white text-slate-900 rounded-xl p-4 overflow-auto select-text prose shadow-inner"></div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Modal de confirmación para eliminar conversación (Estilo Claude) -->
+    <div id="delete-modal" style="display: none; z-index: 99999;" class="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 select-none">
+        <div class="bg-claude-surface border border-claude-border rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4 relative" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                    <i class="fa-regular fa-trash-can text-base"></i>
+                </div>
+                <div>
+                    <h3 class="font-serif text-base text-claude-text font-normal">Eliminar conversación</h3>
+                    <p class="text-[11px] text-claude-textSubtle">Esta acción no se puede deshacer</p>
+                </div>
+            </div>
+            <p class="text-xs text-claude-textMuted leading-relaxed">
+                ¿Estás seguro de que deseas eliminar permanentemente <strong class="text-claude-text break-words" id="delete-modal-title">esta conversación</strong>?
+            </p>
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button type="button" id="btn-cancel-delete" onclick="closeDeleteModal()" class="px-3.5 py-1.5 rounded-xl border border-claude-border text-xs text-claude-textMuted hover:text-claude-text hover:bg-claude-surfaceHover transition cursor-pointer">
+                    Cancelar
+                </button>
+                <button type="button" id="btn-confirm-delete" onclick="confirmDeleteConversation()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs text-white font-medium shadow-sm transition cursor-pointer">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Controller Logic -->
+    <script>
+        // State
+        let currentConversationId = null;
+        let isGenerating = false;
+        let activeAbortController = null;
+        let activeArtifactCode = "";
+
+        // Elements
+        const promptInput = document.getElementById('prompt-input');
+        const btnSend = document.getElementById('btn-send');
+        const btnCancel = document.getElementById('btn-cancel');
+        const messagesList = document.getElementById('messages-list');
+        const messagesContainer = document.getElementById('messages-container');
+        const welcomeBanner = document.getElementById('welcome-banner');
+        const historyList = document.getElementById('history-list');
+        const historyLoading = document.getElementById('history-loading');
+        const selectWorkspace = document.getElementById('select-workspace');
+        const currentWorkspaceDisplay = document.getElementById('current-workspace-display');
+        const selectEffort = document.getElementById('select-effort');
+        const btnNewChat = document.getElementById('btn-new-chat');
+        const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+        const sidebar = document.getElementById('sidebar');
+        const canvasPanel = document.getElementById('canvas-panel');
+        const btnToggleCanvas = document.getElementById('btn-toggle-canvas');
+        const btnCloseCanvas = document.getElementById('btn-close-canvas');
+        const canvasTitle = document.getElementById('canvas-title');
+        const canvasLang = document.getElementById('canvas-lang');
+        const canvasCodeContent = document.getElementById('canvas-code-content');
+        const btnCanvasCopy = document.getElementById('btn-canvas-copy');
+        const btnCanvasDownload = document.getElementById('btn-canvas-download');
+        const tabCanvasCode = document.getElementById('tab-canvas-code');
+        const tabCanvasPreview = document.getElementById('tab-canvas-preview');
+        const canvasCodeBlock = document.getElementById('canvas-code-block');
+        const canvasPreviewContainer = document.getElementById('canvas-preview-container');
+
+        // Workspace listener
+        selectWorkspace.addEventListener('change', (e) => {
+            currentWorkspaceDisplay.textContent = e.target.value;
+        });
+
+        // Sidebar toggle
+        btnToggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Keyboard Shortcut Ctrl+B to toggle sidebar, Ctrl+K for new chat
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                sidebar.classList.toggle('-translate-x-full');
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                btnNewChat.click();
+            }
+        });
+
+        // Canvas toggle
+        function toggleCanvas(show = null) {
+            if (show === null) {
+                canvasPanel.classList.toggle('hidden');
+            } else if (show) {
+                canvasPanel.classList.remove('hidden');
+            } else {
+                canvasPanel.classList.add('hidden');
+            }
+        }
+        btnToggleCanvas.addEventListener('click', () => toggleCanvas());
+        btnCloseCanvas.addEventListener('click', () => toggleCanvas(false));
+
+        // Open in Canvas
+        window.openInCanvas = function(title, code, lang = 'plaintext') {
+            activeArtifactCode = code;
+            canvasTitle.textContent = title;
+            canvasLang.textContent = lang;
+            canvasCodeContent.textContent = code;
+            canvasCodeContent.className = `language-${lang}`;
+            hljs.highlightElement(canvasCodeContent);
+
+            // Preview
+            if (lang === 'html' || lang === 'svg') {
+                canvasPreviewContainer.innerHTML = code;
+            } else if (lang === 'markdown' || lang === 'md') {
+                canvasPreviewContainer.innerHTML = marked.parse(code);
+            } else {
+                canvasPreviewContainer.innerHTML = `<pre class="p-4 text-xs font-mono text-slate-800">${escapeHtml(code)}</pre>`;
+            }
+
+            toggleCanvas(true);
+        };
+
+        // Tabs in Canvas
+        tabCanvasCode.addEventListener('click', () => {
+            tabCanvasCode.className = "px-3 py-1 font-medium text-claude-terracotta border-b-2 border-claude-terracotta";
+            tabCanvasPreview.className = "px-3 py-1 text-claude-textMuted hover:text-claude-text";
+            canvasCodeBlock.classList.remove('hidden');
+            canvasPreviewContainer.classList.add('hidden');
+        });
+        tabCanvasPreview.addEventListener('click', () => {
+            tabCanvasPreview.className = "px-3 py-1 font-medium text-claude-terracotta border-b-2 border-claude-terracotta";
+            tabCanvasCode.className = "px-3 py-1 text-claude-textMuted hover:text-claude-text";
+            canvasCodeBlock.classList.add('hidden');
+            canvasPreviewContainer.classList.remove('hidden');
+        });
+
+        // Copy Canvas code
+        btnCanvasCopy.addEventListener('click', () => {
+            if (!activeArtifactCode) return;
+            navigator.clipboard.writeText(activeArtifactCode).then(() => {
+                const orig = btnCanvasCopy.innerHTML;
+                btnCanvasCopy.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i>';
+                setTimeout(() => btnCanvasCopy.innerHTML = orig, 1500);
+            });
+        });
+
+        // Download Canvas code
+        btnCanvasDownload.addEventListener('click', () => {
+            if (!activeArtifactCode) return;
+            const blob = new Blob([activeArtifactCode], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = canvasTitle.textContent || 'claude_artifact.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Helper: escapeHtml
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Auto-resize input
+        promptInput.addEventListener('input', () => {
+            promptInput.style.height = 'auto';
+            promptInput.style.height = (promptInput.scrollHeight) + 'px';
+        });
+
+        // Keydown handling
+        promptInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+            }
+        });
+
+        btnSend.addEventListener('click', handleSubmit);
+        btnCancel.addEventListener('click', handleCancel);
+
+        // Quick prompt helper
+        window.sendQuickPrompt = function(promptText) {
+            promptInput.value = promptText;
+            handleSubmit();
+        };
+
+        // New Chat
+        btnNewChat.addEventListener('click', () => {
+            currentConversationId = null;
+            messagesList.innerHTML = '';
+            welcomeBanner.classList.remove('hidden');
+            promptInput.value = '';
+            promptInput.style.height = 'auto';
+            toggleCanvas(false);
+            updateActiveConversationHighlight();
+            updateActiveChatDeleteButton();
+            if (window.innerWidth < 1024) sidebar.classList.add('-translate-x-full');
+        });
+
+        function formatRelativeTime(timestamp) {
+            if (!timestamp) return '';
+            const now = Date.now() / 1000;
+            const diff = Math.max(0, now - timestamp);
+            if (diff < 60) return 'ahora';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+            if (diff < 86400 * 7) return `${Math.floor(diff / 86400)}d`;
+            const d = new Date(timestamp * 1000);
+            return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        }
+
+        function getGroupLabel(timestamp) {
+            if (!timestamp) return 'Anteriores';
+            const now = new Date();
+            const target = new Date(timestamp * 1000);
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const startOfYesterday = startOfToday - 86400000;
+            const targetTime = target.getTime();
+
+            if (targetTime >= startOfToday) return 'Hoy';
+            if (targetTime >= startOfYesterday) return 'Ayer';
+            if (targetTime >= startOfToday - 7 * 86400000) return 'Últimos 7 días';
+            return 'Anteriores';
+        }
+
+        function updateActiveConversationHighlight() {
+            const items = historyList.querySelectorAll('[data-conv-id]');
+            items.forEach(el => {
+                const icon = el.querySelector('.history-icon');
+                if (el.dataset.convId === currentConversationId) {
+                    el.className = "group flex items-center justify-between p-2 rounded-lg text-xs bg-claude-surface text-claude-text border-l-2 border-claude-terracotta pl-2.5 font-medium shadow-sm transition";
+                    if (icon) {
+                        icon.classList.remove('text-claude-textSubtle');
+                        icon.classList.add('text-claude-terracotta');
+                    }
+                } else {
+                    el.className = "group flex items-center justify-between p-2 rounded-lg text-xs text-claude-textMuted hover:bg-claude-surface hover:text-claude-text cursor-pointer transition";
+                    if (icon) {
+                        icon.classList.remove('text-claude-terracotta');
+                        icon.classList.add('text-claude-textSubtle');
+                    }
+                }
+            });
+        }
+
+        // Load History
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/agent/conversations');
+                const data = await res.json();
+                historyLoading.classList.add('hidden');
+                historyList.innerHTML = '';
+
+                if (data.success && data.conversations.length > 0) {
+                    const groups = {
+                        'Hoy': [],
+                        'Ayer': [],
+                        'Últimos 7 días': [],
+                        'Anteriores': []
+                    };
+
+                    data.conversations.forEach(item => {
+                        const label = getGroupLabel(item.mtime);
+                        if (!groups[label]) groups[label] = [];
+                        groups[label].push(item);
+                    });
+
+                    Object.keys(groups).forEach(label => {
+                        const list = groups[label];
+                        if (list.length === 0) return;
+
+                        const header = document.createElement('div');
+                        header.className = "text-[10px] font-semibold uppercase tracking-wider text-claude-textSubtle px-2 pt-3 pb-1";
+                        header.textContent = label;
+                        historyList.appendChild(header);
+
+                        list.forEach(item => {
+                            const div = document.createElement('div');
+                            div.dataset.convId = item.id;
+                            div.dataset.convTitle = item.title;
+                            const isActive = item.id === currentConversationId;
+                            div.className = `group flex items-center justify-between p-2 rounded-lg text-xs cursor-pointer transition ${
+                                isActive 
+                                    ? 'bg-claude-surface text-claude-text border-l-2 border-claude-terracotta pl-2.5 font-medium shadow-sm' 
+                                    : 'text-claude-textMuted hover:bg-claude-surface hover:text-claude-text'
+                            }`;
+                            div.innerHTML = `
+                                <div class="flex items-center gap-2 truncate flex-1 min-w-0" title="${escapeHtml(item.title)}">
+                                    <i class="fa-regular fa-message ${isActive ? 'text-claude-terracotta' : 'text-claude-textSubtle'} group-hover:text-claude-terracotta transition shrink-0 history-icon"></i>
+                                    <span class="truncate">${escapeHtml(item.title)}</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0 ml-1.5">
+                                    <span class="text-[10px] text-claude-textSubtle group-hover:hidden font-mono">${formatRelativeTime(item.mtime)}</span>
+                                    <button type="button" class="flex sm:hidden sm:group-hover:flex items-center justify-center w-6 h-6 rounded hover:bg-rose-500/20 hover:text-rose-400 text-claude-textSubtle transition btn-delete-item cursor-pointer" title="Eliminar conversación">
+                                        <i class="fa-regular fa-trash-can text-xs pointer-events-none"></i>
+                                    </button>
+                                </div>
+                            `;
+                            div.onclick = (e) => {
+                                if (e.target.closest('.btn-delete-item')) return;
+                                resumeConversation(item.id);
+                            };
+                            const delBtn = div.querySelector('.btn-delete-item');
+                            if (delBtn) {
+                                delBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    promptDeleteConversation(item.id, item.title);
+                                };
+                            }
+                            historyList.appendChild(div);
+                        });
+                    });
+                } else {
+                    historyList.innerHTML = '<div class="text-[11px] text-claude-textSubtle px-2 py-2">Sin conversaciones aún</div>';
+                }
+            } catch (err) {
+                historyLoading.innerHTML = '<span class="text-rose-400 text-xs">Error al cargar historial</span>';
+            }
+        }
+
+        // Delete Conversation Logic
+        let conversationToDelete = null;
+
+        function promptDeleteConversation(id, title) {
+            console.log("promptDeleteConversation called:", id, title);
+            conversationToDelete = id;
+            const modal = document.getElementById('delete-modal');
+            const titleEl = document.getElementById('delete-modal-title');
+            if (titleEl) {
+                titleEl.textContent = title ? `"${title}"` : 'esta conversación';
+            }
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
+            } else {
+                if (confirm(`¿Estás seguro de que deseas eliminar permanentemente "${title || 'esta conversación'}"? Esta acción no se puede deshacer.`)) {
+                    confirmDeleteConversation();
+                }
+            }
+        }
+
+        function closeDeleteModal() {
+            conversationToDelete = null;
+            const modal = document.getElementById('delete-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Modal backdrop and keyboard listeners
+        const deleteModalEl = document.getElementById('delete-modal');
+        if (deleteModalEl) {
+            deleteModalEl.addEventListener('click', (e) => {
+                if (e.target === deleteModalEl) closeDeleteModal();
+            });
+        }
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+
+        // Header active chat delete button
+        const btnDeleteActiveChat = document.getElementById('btn-delete-active-chat');
+        if (btnDeleteActiveChat) {
+            btnDeleteActiveChat.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentConversationId) {
+                    const activeItem = historyList.querySelector(`[data-conv-id="${currentConversationId}"]`);
+                    const title = activeItem ? (activeItem.getAttribute('data-conv-title') || '') : '';
+                    promptDeleteConversation(currentConversationId, title);
+                }
+            });
+        }
+
+        function updateActiveChatDeleteButton() {
+            if (btnDeleteActiveChat) {
+                if (currentConversationId) {
+                    btnDeleteActiveChat.classList.remove('hidden');
+                    btnDeleteActiveChat.classList.add('flex');
+                } else {
+                    btnDeleteActiveChat.classList.remove('flex');
+                    btnDeleteActiveChat.classList.add('hidden');
+                }
+            }
+        }
+
+        async function confirmDeleteConversation() {
+            if (!conversationToDelete) return;
+            const id = conversationToDelete;
+            const btnConfirm = document.getElementById('btn-confirm-delete');
+            if (btnConfirm) {
+                btnConfirm.disabled = true;
+                btnConfirm.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Borrando...';
+            }
+
+            try {
+                let res = await fetch(`/api/agent/conversation/${id}`, { method: 'DELETE' });
+                if (!res.ok) {
+                    res = await fetch(`/api/agent/conversation/${id}/delete`, { method: 'POST' });
+                }
+                const data = await res.json();
+                if (data.success) {
+                    closeDeleteModal();
+                    showToast('Conversación eliminada con éxito', 'success');
+                    if (currentConversationId === id) {
+                        currentConversationId = null;
+                        messagesList.innerHTML = '';
+                        welcomeBanner.classList.remove('hidden');
+                        toggleCanvas(false);
+                        updateActiveChatDeleteButton();
+                    }
+                    await loadHistory();
+                } else {
+                    showToast(data.error || 'Error al eliminar conversación', 'error');
+                }
+            } catch (err) {
+                showToast('Error de red al eliminar', 'error');
+            } finally {
+                if (btnConfirm) {
+                    btnConfirm.disabled = false;
+                    btnConfirm.innerHTML = 'Eliminar';
+                }
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const isError = type === 'error';
+            toast.className = `fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-medium border shadow-lg transition-all duration-300 transform translate-y-2 opacity-0 ${
+                isError 
+                    ? 'bg-rose-950/90 border-rose-500/30 text-rose-200' 
+                    : 'bg-claude-surface border-claude-border text-claude-text'
+            }`;
+            toast.innerHTML = `
+                <i class="${isError ? 'fa-solid fa-circle-exclamation text-rose-400' : 'fa-solid fa-check text-emerald-400'}"></i>
+                <span>${escapeHtml(message)}</span>
+            `;
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Resume Conversation
+        async function resumeConversation(convId) {
+            currentConversationId = convId;
+            updateActiveConversationHighlight();
+            updateActiveChatDeleteButton();
+            welcomeBanner.classList.add('hidden');
+            messagesList.innerHTML = '<div class="text-center py-8 text-xs text-claude-textSubtle"><i class="fa-solid fa-circle-notch fa-spin mr-2 text-claude-terracotta"></i> Cargando sesión...</div>';
+            if (window.innerWidth < 1024) sidebar.classList.add('-translate-x-full');
+
+            try {
+                const res = await fetch(`/api/agent/conversation/${convId}`);
+                const data = await res.json();
+                messagesList.innerHTML = '';
+
+                if (data.success && data.steps) {
+                    data.steps.forEach(step => {
+                        if (step.type === 'USER_INPUT') {
+                            appendUserMessage(step.content);
+                        } else if (step.type === 'PLANNER_RESPONSE') {
+                            const bubble = createAgentBubble();
+                            if (step.thinking) {
+                                bubble.addThought(step.thinking);
+                            }
+                            if (step.tool_calls && step.tool_calls.length > 0) {
+                                step.tool_calls.forEach(tc => {
+                                    bubble.addToolCall(tc.toolAction || tc.toolSummary || 'Acción', tc);
+                                });
+                            }
+                            if (step.content) {
+                                bubble.appendText(step.content);
+                            }
+                            bubble.finish();
+                        }
+                    });
+                }
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            } catch (e) {
+                messagesList.innerHTML = '<div class="text-rose-400 text-xs text-center py-4">Error al cargar la conversación.</div>';
+            }
+        }
+
+        // Submit message
+        async function handleSubmit() {
+            const prompt = promptInput.value.trim();
+            if (!prompt || isGenerating) return;
+
+            welcomeBanner.classList.add('hidden');
+            appendUserMessage(prompt);
+
+            promptInput.value = '';
+            promptInput.style.height = 'auto';
+
+            setGeneratingState(true);
+
+            const agentBubble = createAgentBubble();
+            activeAbortController = new AbortController();
+
+            try {
+                const payload = {
+                    prompt: prompt,
+                    conversation_id: currentConversationId || "",
+                    workspace: selectWorkspace.value,
+                    effort: selectEffort.value
+                };
+
+                const response = await fetch('/api/agent/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: activeAbortController.signal
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || `HTTP ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop();
+
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed || !trimmed.startsWith('data:')) continue;
+
+                        const rawData = trimmed.substring(5).trim();
+                        if (rawData === '[DONE]') {
+                            break;
+                        }
+
+                        try {
+                            const eventObj = JSON.parse(rawData);
+                            handleAgentEvent(eventObj, agentBubble);
+                        } catch (e) {
+                            console.warn("Parse error:", rawData);
+                        }
+                    }
+                }
+
+                agentBubble.finish();
+                loadHistory();
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    agentBubble.appendText("\n\n*(Generación cancelada por el usuario)*");
+                } else {
+                    agentBubble.appendText(`\n\n**Error:** No se pudo completar la solicitud (${err.message}).`);
+                }
+                agentBubble.finish();
+            } finally {
+                setGeneratingState(false);
+            }
+        }
+
+        function handleCancel() {
+            if (activeAbortController) {
+                activeAbortController.abort();
+            }
+        }
+
+        function setGeneratingState(generating) {
+            isGenerating = generating;
+            btnSend.disabled = generating;
+            btnCancel.classList.toggle('hidden', !generating);
+        }
+
+        // Append User Message (Claude Bubble)
+        function appendUserMessage(text) {
+            const div = document.createElement('div');
+            div.className = "flex justify-end";
+            div.innerHTML = `
+                <div class="max-w-[85%] rounded-2xl bg-claude-surface text-claude-text px-4 py-3 border border-claude-border text-sm whitespace-pre-wrap leading-relaxed shadow-sm">
+                    ${escapeHtml(text)}
+                </div>
+            `;
+            messagesList.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Create Assistant Bubble (Claude 3.7 Desktop Style)
+        function createAgentBubble() {
+            const div = document.createElement('div');
+            div.className = "flex gap-3.5 text-sm";
+
+            // Claude Starburst Avatar
+            const avatar = document.createElement('div');
+            avatar.className = "w-7 h-7 rounded-lg bg-claude-surface border border-claude-border flex items-center justify-center shrink-0 shadow-sm mt-0.5";
+            avatar.innerHTML = `
+                <svg class="claude-star w-4 h-4" viewBox="0 0 24 24">
+                    <path d="M12 2L14.2 9.4L21.6 11.6L14.2 13.8L12 21.2L9.8 13.8L2.4 11.6L9.8 9.4L12 2Z" fill="#d97757"/>
+                </svg>
+            `;
+
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = "flex-1 space-y-2.5 overflow-hidden";
+
+            // Claude 3.7 Extended Thinking Accordion
+            const thoughtDetails = document.createElement('details');
+            thoughtDetails.className = "hidden text-xs rounded-xl bg-claude-sidebar border border-claude-border p-2.5 text-claude-textSubtle group cursor-pointer transition select-text";
+            thoughtDetails.innerHTML = `
+                <summary class="font-medium text-claude-textMuted flex items-center gap-1.5 select-none hover:text-claude-terracotta">
+                    <i class="fa-solid fa-sparkles text-claude-terracotta text-[10px]"></i>
+                    <span>Pensamiento del modelo</span>
+                    <i class="fa-solid fa-chevron-down text-[9px] ml-auto transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="thought-content mt-2 pt-2 border-t border-claude-border text-[11px] font-mono leading-relaxed text-claude-textMuted whitespace-pre-wrap"></div>
+            `;
+
+            // Tool executions container
+            const toolsContainer = document.createElement('div');
+            toolsContainer.className = "space-y-1.5 empty:hidden";
+
+            // Text markdown response container
+            const textElement = document.createElement('div');
+            textElement.className = "prose text-claude-text leading-relaxed streaming-cursor";
+
+            contentWrapper.appendChild(thoughtDetails);
+            contentWrapper.appendChild(toolsContainer);
+            contentWrapper.appendChild(textElement);
+
+            div.appendChild(avatar);
+            div.appendChild(contentWrapper);
+            messagesList.appendChild(div);
+
+            let accumulatedText = "";
+            let accumulatedThought = "";
+
+            return {
+                addThought: (delta) => {
+                    accumulatedThought += delta;
+                    thoughtDetails.classList.remove('hidden');
+                    thoughtDetails.querySelector('.thought-content').textContent = accumulatedThought;
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                },
+                addToolCall: (name, details) => {
+                    const badge = document.createElement('div');
+                    badge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-claude-surface border border-claude-border text-xs text-claude-text font-mono shadow-sm";
+                    
+                    let icon = "fa-terminal text-claude-terracotta";
+                    if (name.includes("file") || name.includes("view") || name.includes("read")) icon = "fa-file-lines text-sky-400";
+                    if (name.includes("write") || name.includes("replace")) icon = "fa-pen-to-square text-emerald-400";
+                    
+                    badge.innerHTML = `
+                        <i class="fa-solid ${icon}"></i>
+                        <span class="font-medium text-claude-text">${escapeHtml(name)}</span>
+                        <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">Ejecutado</span>
+                    `;
+                    toolsContainer.appendChild(badge);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                },
+                appendText: (delta) => {
+                    accumulatedText += delta;
+                    textElement.innerHTML = marked.parse(accumulatedText);
+                    
+                    // Attach "Abrir en Lienzo" to code blocks
+                    textElement.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                        const pre = block.parentElement;
+                        if (!pre.querySelector('.canvas-btn')) {
+                            const btn = document.createElement('button');
+                            btn.className = "canvas-btn text-[10px] font-sans bg-claude-terracottaLight hover:bg-claude-terracotta/30 text-claude-terracotta border border-claude-terracotta/40 px-2 py-0.5 rounded ml-2 transition";
+                            btn.innerHTML = '<i class="fa-solid fa-layer-group mr-1"></i> Abrir en Lienzo';
+                            btn.onclick = () => {
+                                const lang = (block.className.match(/language-(\w+)/) || [])[1] || 'plaintext';
+                                window.openInCanvas("Artefacto de Código", block.textContent, lang);
+                            };
+                            pre.prepend(btn);
+                        }
+                    });
+
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                },
+                finish: () => {
+                    textElement.classList.remove('streaming-cursor');
+                }
+            };
+        }
+
+        // Handle AGY JSON events
+        function handleAgentEvent(evt, bubble) {
+            if (evt.event === 'init') {
+                if (evt.conversation_id) {
+                    currentConversationId = evt.conversation_id;
+                }
+            } else if (evt.event === 'step_update') {
+                const update = evt.step_update;
+                if (!update) return;
+
+                if (update.conversation_id && !currentConversationId) {
+                    currentConversationId = update.conversation_id;
+                }
+
+                if (update.step_type === 'agent_response' && update.text_delta) {
+                    bubble.appendText(update.text_delta);
+                } else if (update.thinking_delta) {
+                    bubble.addThought(update.thinking_delta);
+                } else if (update.step_type === 'tool_call' && update.state === 'DONE') {
+                    bubble.addToolCall(update.tool_name || 'Herramienta', update);
+                }
+            } else if (evt.event === 'result') {
+                if (evt.result && evt.result.conversation_id) {
+                    currentConversationId = evt.result.conversation_id;
+                }
+            }
+        }
+
+        // Clear Service Worker and Cache to ensure 100% fresh real-time UI
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (let r of registrations) {
+                    r.unregister();
+                }
+            });
+            if ('caches' in window) {
+                caches.keys().then(keys => {
+                    keys.forEach(k => caches.delete(k));
+                });
+            }
+        }
+
+        // Initialize history
+        loadHistory();
+    </script>
+</body>
+</html>

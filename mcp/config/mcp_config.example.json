@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "android-microserver-dev": {
+      "command": "python",
+      "args": [
+        "/absolute/path/to/android-microserver/mcp/server.py"
+      ],
+      "env": {
+        "PYTHONIOENCODING": "utf-8",
+        "MOTOSERVER_HOST": "http://192.168.1.100:8080",
+        "MOTOSERVER_AGENT_KEY": "YOUR_AGENT_API_KEY"
+      }
+    }
+  }
+}

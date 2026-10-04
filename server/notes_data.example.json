@@ -1,0 +1,13 @@
+[
+  {
+    "id": "sample-note-1",
+    "title": "Bienvenido a Android-MicroServer",
+    "content": "Servidor Linux ligero corriendo sobre un smartphone Android reutilizado.",
+    "tags": [
+      "general",
+      "bienvenida"
+    ],
+    "done": false,
+    "created_at": "2026-01-01 12:00"
+  }
+]

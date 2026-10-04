@@ -1,0 +1,15 @@
+[
+  {
+    "id": "gdrive_sample_id",
+    "email": "user@example.com",
+    "name": "Sample User",
+    "picture": "https://example.com/avatar.png",
+    "access_token": "SAMPLE_ACCESS_TOKEN",
+    "refresh_token": "SAMPLE_REFRESH_TOKEN",
+    "expires_at": 1787976012.0,
+    "storage_used_gb": 0.0,
+    "storage_total_gb": 15.0,
+    "status": "Desconectado",
+    "connected_at": "2026-01-01 00:00"
+  }
+]
