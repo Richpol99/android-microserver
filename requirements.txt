@@ -1,0 +1,6 @@
+# Android-MicroServer Python Dependencies
+aiohttp>=3.9.0
+cryptography>=42.0.0
+psutil>=5.9.0
+yt_dlp>=2024.3.0
+ytmusicapi>=1.5.0

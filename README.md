@@ -287,7 +287,7 @@ cp -r server/* /root/dashboard/
 cd /root/dashboard
 
 # Install required Python packages
-pip3 install aiohttp
+pip3 install -r requirements.txt
 ```
 
 ### Step 5: Nginx & Cloudflare SSL Setup
